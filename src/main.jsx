@@ -10,9 +10,8 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContext>
       <ThemeProvider>
-        <ToastContainer>
+        <ToastContainer />
           <App />
-        </ToastContainer>
       </ThemeProvider>
     </AuthContext>
   </StrictMode>

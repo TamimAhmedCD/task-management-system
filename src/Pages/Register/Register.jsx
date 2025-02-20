@@ -3,6 +3,7 @@ import { VscAccount } from "react-icons/vsc";
 import { MdMailOutline, MdOutlinePhoto } from "react-icons/md";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const {createUser, updateUserProfile, setUser} = useAuth()
@@ -13,7 +14,7 @@ const Register = () => {
     const form = new FormData(e.target);
     const firstName = form.get("firstName");
     const lastName = form.get("lastName");
-    const fullName = firstName + lastName;
+    const name = `${firstName} ${lastName}`.trim();
     const photo = form.get("photo");
     const email = form.get("email");
     const password = form.get("password");
@@ -22,18 +23,18 @@ const Register = () => {
     .then((result) => {
       const user = result.user;
 
-      updateUserProfile({ displayName: fullName, photoURL: photo })
+      updateUserProfile(name, photo)
         .then(() => {
           toast.success("Register Success");
           setUser(user);
           navigate(location?.state ? location.state : "/");
         })
         .catch((error) => {
-          alert(error.error);
+          console.log(error);
         });
     })
     .catch((error) => {
-      alert(error.code);
+      console.log(error.code);
     });
   };
 
