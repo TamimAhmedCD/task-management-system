@@ -1,8 +1,42 @@
 import { CiLock } from "react-icons/ci";
 import { VscAccount } from "react-icons/vsc";
-import { MdMailOutline } from "react-icons/md";
+import { MdMailOutline, MdOutlinePhoto } from "react-icons/md";
+import useAuth from "@/hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const Register = () => {
+  const {createUser, updateUserProfile, setUser} = useAuth()
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const firstName = form.get("firstName");
+    const lastName = form.get("lastName");
+    const fullName = firstName + lastName;
+    const photo = form.get("photo");
+    const email = form.get("email");
+    const password = form.get("password");
+
+    createUser(email, password)
+    .then((result) => {
+      const user = result.user;
+
+      updateUserProfile({ displayName: fullName, photoURL: photo })
+        .then(() => {
+          toast.success("Register Success");
+          setUser(user);
+          navigate(location?.state ? location.state : "/");
+        })
+        .catch((error) => {
+          alert(error.error);
+        });
+    })
+    .catch((error) => {
+      alert(error.code);
+    });
+  };
+
   return (
     <div className="min-w-screen min-h-screen flex items-center justify-center px-5 py-5">
       <div
@@ -220,7 +254,7 @@ const Register = () => {
               <h1 className="font-bold text-3xl text-gray-900">REGISTER</h1>
               <p>Enter your information to register</p>
             </div>
-            <div>
+            <form onSubmit={handleSubmit}>
               <div className="flex -mx-3">
                 <div className="w-1/2 px-3 mb-5">
                   <label className="text-xs font-semibold px-1">
@@ -228,12 +262,14 @@ const Register = () => {
                   </label>
                   <div className="flex">
                     <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
-                    <VscAccount />
+                      <VscAccount />
                     </div>
                     <input
                       type="text"
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="John"
+                      name="firstName"
+                      required
                     />
                   </div>
                 </div>
@@ -243,12 +279,14 @@ const Register = () => {
                   </label>
                   <div className="flex">
                     <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
-                    <VscAccount />
+                      <VscAccount />
                     </div>
                     <input
                       type="text"
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="Smith"
+                      name="lastName"
+                      required
                     />
                   </div>
                 </div>
@@ -258,12 +296,31 @@ const Register = () => {
                   <label className="text-xs font-semibold px-1">Email</label>
                   <div className="flex">
                     <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
-                    <MdMailOutline />
+                      <MdMailOutline />
                     </div>
                     <input
                       type="email"
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="johnsmith@example.com"
+                      name="email"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex -mx-3">
+                <div className="w-full px-3 mb-5">
+                  <label className="text-xs font-semibold px-1">Photo</label>
+                  <div className="flex">
+                    <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
+                      <MdOutlinePhoto />
+                    </div>
+                    <input
+                      type="url"
+                      className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+                      placeholder="Enter Photo Link"
+                      name="photo"
+                      required
                     />
                   </div>
                 </div>
@@ -279,6 +336,7 @@ const Register = () => {
                       type="password"
                       className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                       placeholder="************"
+                      name="password"
                     />
                   </div>
                 </div>
@@ -290,7 +348,7 @@ const Register = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
