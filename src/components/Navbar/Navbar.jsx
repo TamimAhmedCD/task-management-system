@@ -12,7 +12,7 @@ const Navbar = () => {
           <li><a href="#contact" className="hover:text-blue-600 dark:hover:text-blue-400">Contact</a></li>
         </ul>
         <div className="flex items-center space-x-4">
-          <Button>Sign Up</Button>
+          <Link to="register"><Button>Sign Up</Button></Link>
           <Link to="login"><Button variant="outline">Login</Button></Link>
           <ModeToggle />
         </div>
