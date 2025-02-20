@@ -1,4 +1,5 @@
 import { ModeToggle } from '../mode-toggle';
+import { Button } from '../ui/button';
 
 const Navbar = () => {
     return (
@@ -10,7 +11,8 @@ const Navbar = () => {
           <li><a href="#contact" className="hover:text-blue-600 dark:hover:text-blue-400">Contact</a></li>
         </ul>
         <div className="flex items-center space-x-4">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700">Sign Up</button>
+          <Button>Sign Up</Button>
+          <Button variant="outline">Login</Button>
           <ModeToggle />
         </div>
       </nav>
