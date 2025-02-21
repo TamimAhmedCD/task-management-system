@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://tasklyy-api.vercel.app",
 });
 
 const useAxiosSecure = () => {

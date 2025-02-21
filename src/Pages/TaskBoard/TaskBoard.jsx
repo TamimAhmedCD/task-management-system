@@ -22,81 +22,31 @@ export default function TaskBoard() {
   const [tasks, setTasks] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Fetch tasks from the API on component mount
   useEffect(() => {
-    setLoading(true);
-
-    axiosSecure
-      .get(`/tasks/${user.email}`)
-      .then((res) => {
-        setTasks(res.data); // Directly set tasks from API response
-        console.log("Fetched tasks:", res.data);
-      })
-      .catch((error) => console.error("Error fetching tasks:", error))
-      .finally(() => setLoading(false));
+    fetchTasks();
   }, [axiosSecure, user.email]);
 
-  const onAddTask = (newTask) => {
-    // Send the new task to the server using POST request
-    axiosSecure
-      .post("/tasks", newTask)
-      .then((res) => {
-        // Once the task is added, update the local state
-        setTasks((prevTasks) => {
-          const updatedTasks = { ...prevTasks };
-          // Add the new task to the appropriate column
-          updatedTasks[newTask.category].push(res.data);
-          return updatedTasks;
-        });
-      })
-      .catch((error) => console.error("Error adding task:", error));
+  const fetchTasks = async () => {
+    setLoading(true);
+    const res = await axiosSecure.get(`/tasks/${user.email}`);
+    setTasks(res.data);
+    setLoading(false);
   };
 
-  const handleEditTask = (editedTask) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = { ...prevTasks };
-  
-      // Remove the task from its previous category
-      Object.keys(updatedTasks).forEach((category) => {
-        updatedTasks[category] = updatedTasks[category].filter(task => task.id !== editedTask.id);
-      });
-  
-      // Add the task to the new category
-      updatedTasks[editedTask.category].push(editedTask);
-  
-      return updatedTasks;
-    });
+  const onAddTask = async (newTask) => {
+    await axiosSecure.post("/tasks", newTask);
+    fetchTasks();
+  };
+
+  const handleEditTask = async (editedTask) => {
+    await axiosSecure.put(`/tasks/${editedTask.id}`, editedTask);
+    fetchTasks();
   };
 
   const handleDeleteTask = async (taskId) => {
-    try {
-      const response = await axiosSecure.delete(`/tasks/${taskId}`);
-  
-      if (response.status === 200) {
-        setTasks((prevTasks) => {
-          const updatedTasks = { ...prevTasks };
-          for (const columnId in updatedTasks) {
-            updatedTasks[columnId] = updatedTasks[columnId].filter(task => task.id !== taskId);
-          }
-          return updatedTasks;
-        });
-      } else {
-        console.error('Failed to delete task');
-      }
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    }
+    await axiosSecure.delete(`/tasks/${taskId}`);
+    fetchTasks();
   };
-  
-  
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -124,7 +74,7 @@ export default function TaskBoard() {
             <TaskColumn
               key={column.id}
               title={column.title}
-              tasks={tasks[column.id] || []} // Ensure it's an array
+              tasks={tasks[column.id] || []}
               handleEditTask={handleEditTask}
               handleDeleteTask={handleDeleteTask}
             />
