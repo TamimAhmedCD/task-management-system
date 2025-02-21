@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { Button } from "../ui/button";
 
 const Hero = () => {
@@ -10,9 +11,9 @@ const Hero = () => {
         Manage your projects, track progress, and boost productivity with
         Taskly.
       </p>
-    <div className="py-4">
-    <Button>Get Started</Button>
-    </div>
+      <div className="py-4">
+        <Link to="dashboard"><Button>Get Started</Button></Link>
+      </div>
     </section>
   );
 };
