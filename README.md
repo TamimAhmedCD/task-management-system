@@ -6,7 +6,7 @@ Taskly is a task management application designed to help users organize their wo
 
 ## Live Demo
 
-[Taskly Live Demo](https://tasklyy.vercel.app/dashboard) *(Replace with actual live link)*
+[Taskly Live Demo](https://tasklyy.vercel.app) *(Replace with actual live link)*
 
 ## Features
 
