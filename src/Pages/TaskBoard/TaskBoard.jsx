@@ -52,6 +52,31 @@ export default function TaskBoard() {
       .catch((error) => console.error("Error adding task:", error));
   };
 
+  const handleEditTask = (editedTask) => {
+    setTasks((prevTasks) => {
+      const updatedTasks = { ...prevTasks };
+  
+      // Remove the task from its previous category
+      Object.keys(updatedTasks).forEach((category) => {
+        updatedTasks[category] = updatedTasks[category].filter(task => task.id !== editedTask.id);
+      });
+  
+      // Add the task to the new category
+      updatedTasks[editedTask.category].push(editedTask);
+  
+      return updatedTasks;
+    });
+  };
+  
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -79,6 +104,7 @@ export default function TaskBoard() {
               key={column.id}
               title={column.title}
               tasks={tasks[column.id] || []} // Ensure it's an array
+              handleEditTask={handleEditTask}
             />
           ))}
         </div>

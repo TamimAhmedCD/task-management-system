@@ -1,9 +1,9 @@
-import { MoreHorizontal, MessageSquare, Link2 } from "lucide-react";
+import { MessageSquare, Link2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
 import useAuth from "@/hooks/useAuth";
+import EditTaskButton from "./EditTaskButton";
 
 const categoryColors = {
   "To-Do":
@@ -15,17 +15,17 @@ const categoryColors = {
   Done: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
 };
 
-export default function TaskCard({ task }) {
+export default function TaskCard({ task, handleEditTask }) {
   const { user } = useAuth();
   return (
-    <Card className="p-4 space-y-3 bg-white dark:bg-gray-800">
+    <Card className="p-4 space-y-3 ">
       <div className="flex items-center justify-between">
         <Badge variant="secondary" className={categoryColors[task.category]}>
           {task.category}
         </Badge>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center">
+          <EditTaskButton task={task} handleEditTask={handleEditTask}/>
+        </div>
       </div>
       <p className="text-sm font-medium">{task.title}</p>
       <p className="text-xs text-gray-500 dark:text-gray-400">

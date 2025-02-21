@@ -2,7 +2,7 @@ import { MoreHorizontal } from "lucide-react"
 import { Button } from "../ui/button"
 import TaskCard from "./TaskCard"
 
-export default function TaskColumn({ title, tasks }) {
+export default function TaskColumn({ title, tasks, handleEditTask }) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -13,7 +13,7 @@ export default function TaskColumn({ title, tasks }) {
       </div>
 
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard key={task.id} task={task} handleEditTask={handleEditTask} />
       ))}
     </div>
   )
