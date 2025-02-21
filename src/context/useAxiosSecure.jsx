@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const axiosPublic = axios.create({
-  baseURL: "https://asset-ease-seven.vercel.app",
+const axiosSecure = axios.create({
+  baseURL: "http://localhost:3000",
 });
 
-const useAxiosPublic = () => {
-  return axiosPublic;
+const useAxiosSecure = () => {
+  return axiosSecure;
 };
 
-export default useAxiosPublic;
+export default useAxiosSecure;
