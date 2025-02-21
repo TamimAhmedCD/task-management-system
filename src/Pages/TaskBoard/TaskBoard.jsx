@@ -67,6 +67,27 @@ export default function TaskBoard() {
       return updatedTasks;
     });
   };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const response = await axiosSecure.delete(`/tasks/${taskId}`);
+  
+      if (response.status === 200) {
+        setTasks((prevTasks) => {
+          const updatedTasks = { ...prevTasks };
+          for (const columnId in updatedTasks) {
+            updatedTasks[columnId] = updatedTasks[columnId].filter(task => task.id !== taskId);
+          }
+          return updatedTasks;
+        });
+      } else {
+        console.error('Failed to delete task');
+      }
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
+  };
+  
   
 
   if (loading) {
@@ -105,6 +126,7 @@ export default function TaskBoard() {
               title={column.title}
               tasks={tasks[column.id] || []} // Ensure it's an array
               handleEditTask={handleEditTask}
+              handleDeleteTask={handleDeleteTask}
             />
           ))}
         </div>

@@ -4,6 +4,8 @@ import { Badge } from "../ui/badge";
 import { Card } from "../ui/card";
 import useAuth from "@/hooks/useAuth";
 import EditTaskButton from "./EditTaskButton";
+import { Button } from "../ui/button";
+import { MdDelete } from "react-icons/md";
 
 const categoryColors = {
   "To-Do":
@@ -15,7 +17,7 @@ const categoryColors = {
   Done: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
 };
 
-export default function TaskCard({ task, handleEditTask }) {
+export default function TaskCard({ task, handleEditTask, handleDeleteTask }) {
   const { user } = useAuth();
   return (
     <Card className="p-4 space-y-3 ">
@@ -24,7 +26,16 @@ export default function TaskCard({ task, handleEditTask }) {
           {task.category}
         </Badge>
         <div className="flex items-center">
-          <EditTaskButton task={task} handleEditTask={handleEditTask}/>
+          <EditTaskButton task={task} handleEditTask={handleEditTask} />
+          <div
+            onClick={() => {
+              handleDeleteTask(task._id);
+            }}
+          >
+            <Button variant="ghost" size="icon">
+              <MdDelete className="h-4 w-4 text-red-500" />
+            </Button>
+          </div>
         </div>
       </div>
       <p className="text-sm font-medium">{task.title}</p>
