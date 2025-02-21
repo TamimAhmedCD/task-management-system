@@ -1,92 +1,56 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import ProfileMenu from "@/components/ProfileMenu/ProfileMenu";
 import Sidebar from "@/components/Sidebar/Sidebar";
-// import AddTaskButton from "@/components/Tasks/AddTask";
+import AddTaskButton from "@/components/Tasks/AddTask";
 import TaskColumn from "@/components/Tasks/TaskColumn";
 import useAxiosSecure from "@/context/useAxiosSecure";
+import useAuth from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 
-const initialColumns = [
+// Manually inserted column names
+const columns = [
   { title: "To-Do", id: "to-do" },
   { title: "In Progress", id: "in-progress" },
   { title: "Needs Review", id: "needs-review" },
   { title: "Done", id: "done" },
 ];
 
-const initialTasks = {
-  "to-do": [
-    {
-      id: 1,
-      title: "Konsep hero title yang menarik",
-      description: "Create an engaging hero title concept",
-      category: "To-Do",
-      timestamp: "2023-06-01T09:00:00Z",
-    },
-  ],
-  "in-progress": [
-    {
-      id: 2,
-      title: "Check the company we copied doesn't think we copied them.",
-      description: "Ensure our design is original",
-      category: "In Progress",
-      timestamp: "2023-06-02T10:30:00Z",
-    },
-  ],
-  "needs-review": [
-    {
-      id: 3,
-      title: "Replace lorem ipsum text in the final designs",
-      description: "Update placeholder text with actual content",
-      category: "Needs Review",
-      timestamp: "2023-06-03T14:15:00Z",
-    },
-  ],
-  done: [
-    {
-      id: 4,
-      title: "Send Advert illustrations over to production company.",
-      description: "Finalize and deliver illustrations",
-      category: "Done",
-      timestamp: "2023-06-04T16:45:00Z",
-    },
-  ],
-};
-
 export default function TaskBoard() {
   const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
 
-  const [columns, setColumns] = useState([]);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // Fetch tasks from the API on component mount
   useEffect(() => {
-    setLoading(true); // Set loading to true when fetching data
+    setLoading(true);
 
-    // Fetch categories
-    axiosSecure.get("/categories-with-keys").then((res) => {
-      setColumns(res.data);
-    });
-
-    // Fetch tasks
     axiosSecure
-      .get("/tasks")
+      .get(`/tasks/${user.email}`)
       .then((res) => {
-        setTasks(res.data);
+        setTasks(res.data); // Directly set tasks from API response
+        console.log("Fetched tasks:", res.data);
       })
-      .finally(() => {
-        setLoading(false); // Set loading to false once data is fetched
-      });
-  }, [axiosSecure]);
+      .catch((error) => console.error("Error fetching tasks:", error))
+      .finally(() => setLoading(false));
+  }, [axiosSecure, user.email]);
 
-  console.log(tasks);
-
-  // const handleAddTask = (newTask) => {
-  //   const columnId = newTask.category.toLowerCase().replace(" ", "-");
-  //   setTasks((prevTasks) => ({
-  //     ...prevTasks,
-  //     [columnId]: [...prevTasks[columnId], { ...newTask, id: Date.now() }],
-  //   }));
-  // };
+  const onAddTask = (newTask) => {
+    // Send the new task to the server using POST request
+    axiosSecure
+      .post("/tasks", newTask)
+      .then((res) => {
+        // Once the task is added, update the local state
+        setTasks((prevTasks) => {
+          const updatedTasks = { ...prevTasks };
+          // Add the new task to the appropriate column
+          updatedTasks[newTask.category].push(res.data);
+          return updatedTasks;
+        });
+      })
+      .catch((error) => console.error("Error adding task:", error));
+  };
 
   if (loading) {
     return (
@@ -104,20 +68,17 @@ export default function TaskBoard() {
             Homepage Design
           </h1>
           <div className="flex items-center gap-2">
-            {/* <AddTaskButton onAddTask={handleAddTask} /> */}
             <ModeToggle />
-            {/* Avatar group */}
+            <AddTaskButton onAddTask={onAddTask} />
             <ProfileMenu />
-            {/* ... (Keep the Avatar components as they were) ... */}
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {columns.map((column) => (
             <TaskColumn
-              key={column.key}
+              key={column.id}
               title={column.title}
-              tasks={tasks[column.key]}
-              // onAddTask={handleAddTask}
+              tasks={tasks[column.id] || []} // Ensure it's an array
             />
           ))}
         </div>

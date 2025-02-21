@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod';
+import useAuth from "@/hooks/useAuth"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(50, "Title must be 50 characters or less"),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 })
 
 export default function AddTaskButton({ onAddTask }) {
+  const { user } = useAuth() // Access the current user's data
   const [open, setOpen] = React.useState(false)
 
   const form = useForm({
@@ -43,9 +45,11 @@ export default function AddTaskButton({ onAddTask }) {
   function onSubmit(values) {
     const newTask = {
       ...values,
+      email: user.email, // Add user email to the new task
       timestamp: new Date().toISOString(),
     }
-    onAddTask(newTask)
+    console.log(newTask);
+    onAddTask(newTask) // Pass the new task to the onAddTask function
     setOpen(false)
     form.reset()
   }
@@ -125,4 +129,3 @@ export default function AddTaskButton({ onAddTask }) {
     </Dialog>
   )
 }
-
