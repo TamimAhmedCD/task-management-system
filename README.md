@@ -6,7 +6,7 @@ Taskly is a task management application designed to help users organize their wo
 
 ## Live Demo
 
-[Taskly Live Demo](#) *(Replace with actual live link)*
+[Taskly Live Demo](https://tasklyy.vercel.app/dashboard) *(Replace with actual live link)*
 
 ## Features
 
@@ -77,5 +77,5 @@ Taskly is a task management application designed to help users organize their wo
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/taskly.git
+git clone https://github.com/TamimAhmedCD/task-management-system
 cd taskly
