@@ -1,10 +1,9 @@
-import { Outlet } from "react-router";
+import TaskBoard from "@/Pages/TaskBoard/TaskBoard";
 
 const Dashboard = () => {
   return (
     <div>
-      This is Dashboard
-      <Outlet />
+      <TaskBoard />
     </div>
   );
 };

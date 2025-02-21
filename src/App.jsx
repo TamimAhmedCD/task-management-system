@@ -9,6 +9,7 @@ import Login from "./Pages/Login/Login";
 import RootLayout from "./layout/RootLayout";
 import Dashboard from "./Dashboard/Dashboard";
 import Register from "./Pages/Register/Register";
+import PrivateRoute from "./Router/PrivateRoute";
 
 function App() {
   const router = createBrowserRouter(
@@ -19,7 +20,14 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
-        <Route path="dashboard" element={<Dashboard />}></Route>
+        <Route
+          path="dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        ></Route>
       </>
     )
   );
