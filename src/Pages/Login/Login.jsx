@@ -3,6 +3,7 @@ import { CiLock } from "react-icons/ci";
 import { MdMailOutline } from "react-icons/md";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import SocialLogin from "./SocailLogin";
 
 const Register = () => {
   const {loginUser } = useAuth()
@@ -280,6 +281,7 @@ const Register = () => {
                 </div>
               </div>
             </form>
+            <SocialLogin />
           </div>
         </div>
       </div>
