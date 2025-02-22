@@ -10,7 +10,7 @@ import { useState } from "react"
 import { z } from "zod"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import useAxiosSecure from "@/context/useAxiosSecure"
+// import useAxiosSecure from "@/context/useAxiosSecure"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required").max(50, "Title must be 50 characters or less"),
@@ -22,7 +22,7 @@ const formSchema = z.object({
 
 export default function EditTaskButton({ task, handleEditTask }) {
   const [open, setOpen] = useState(false)
-  const axiosSecure = useAxiosSecure()
+  // const axiosSecure = useAxiosSecure()
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -35,18 +35,22 @@ export default function EditTaskButton({ task, handleEditTask }) {
 
   async function onSubmit(values) {
     try {
+      console.log("Updated Task: ", values);
       const updatedTask = {
         ...values,
         timestamp: new Date().toISOString(), // Add timestamp field
       };
   
-      const response = await axiosSecure.put(`/tasks/${task._id}`, updatedTask);
-      handleEditTask(response.data); // Pass the updated task to parent handler
-      setOpen(false);
+      // Check if handleEditTask is triggered with the correct task
+      console.log("Passing updated task to parent:", updatedTask);
+      
+      handleEditTask(task._id, updatedTask); // Pass the updated task to parent handler
+      setOpen(false); // Close dialog on successful update
     } catch (error) {
       console.error("Error updating task:", error);
     }
   }
+  
   
 
   return (

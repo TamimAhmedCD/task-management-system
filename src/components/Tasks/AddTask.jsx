@@ -48,7 +48,6 @@ export default function AddTaskButton({ onAddTask }) {
       email: user.email, // Add user email to the new task
       timestamp: new Date().toISOString(),
     }
-    console.log(newTask);
     onAddTask(newTask) // Pass the new task to the onAddTask function
     setOpen(false)
     form.reset()

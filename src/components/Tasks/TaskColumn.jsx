@@ -13,7 +13,7 @@ export default function TaskColumn({ title, tasks, handleEditTask,handleDeleteTa
       </div>
 
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} handleEditTask={handleEditTask} handleDeleteTask={handleDeleteTask} />
+        <TaskCard key={task._id} task={task} handleEditTask={handleEditTask} handleDeleteTask={handleDeleteTask} />
       ))}
     </div>
   )

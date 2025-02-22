@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import { ModeToggle } from "@/components/mode-toggle";
 import ProfileMenu from "@/components/ProfileMenu/ProfileMenu";
 import Sidebar from "@/components/Sidebar/Sidebar";
@@ -5,9 +7,10 @@ import AddTaskButton from "@/components/Tasks/AddTask";
 import TaskColumn from "@/components/Tasks/TaskColumn";
 import useAxiosSecure from "@/context/useAxiosSecure";
 import useAuth from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
 
-// Manually inserted column names
+// Define WebSocket connection (replace with your backend URL)
+const socket = io("http://localhost:3000"); // Change to your deployed backend URL
+
 const columns = [
   { title: "To-Do", id: "to-do" },
   { title: "In Progress", id: "in-progress" },
@@ -18,34 +21,89 @@ const columns = [
 export default function TaskBoard() {
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
-
-  const [tasks, setTasks] = useState({});
+  const [tasks, setTasks] = useState({
+    "to-do": [],
+    "in-progress": [],
+    "needs-review": [],
+    "done": [],
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTasks();
+
+    // Listen for real-time updates
+    socket.on("task_created", (newTask) => {
+      setTasks((prevTasks) => ({
+        ...prevTasks,
+        [newTask.category]: [...(prevTasks[newTask.category] || []), newTask],
+      }));
+    });
+
+    socket.on("task_updated", ({ id, updatedTask }) => {
+      setTasks((prevTasks) => {
+        const updatedCategory = updatedTask.category || "to-do";
+        return {
+          ...prevTasks,
+          [updatedCategory]: (prevTasks[updatedCategory] || []).map((task) =>
+            task._id === id ? updatedTask : task
+          ),
+        };
+      });
+    });
+
+    socket.on("task_deleted", ({ id }) => {
+      setTasks((prevTasks) => {
+        const newTasks = {};
+        Object.keys(prevTasks).forEach((category) => {
+          newTasks[category] = (prevTasks[category] || []).filter(
+            (task) => task._id !== id
+          );
+        });
+        return newTasks;
+      });
+    });
+
+    return () => {
+      socket.off("task_created");
+      socket.off("task_updated");
+      socket.off("task_deleted");
+    };
   }, [axiosSecure, user.email]);
 
   const fetchTasks = async () => {
     setLoading(true);
-    const res = await axiosSecure.get(`/tasks/${user.email}`);
-    setTasks(res.data);
-    setLoading(false);
+    try {
+      const res = await axiosSecure.get(`/tasks/${user.email}`);
+      setTasks(res.data || {
+        "to-do": [],
+        "in-progress": [],
+        "needs-review": [],
+        "done": [],
+      });
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setTasks({
+        "to-do": [],
+        "in-progress": [],
+        "needs-review": [],
+        "done": [],
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onAddTask = async (newTask) => {
     await axiosSecure.post("/tasks", newTask);
-    fetchTasks();
   };
 
-  const handleEditTask = async (editedTask) => {
-    await axiosSecure.put(`/tasks/${editedTask.id}`, editedTask);
-    fetchTasks();
+  const handleEditTask = async (taskId, editedTask) => {
+    await axiosSecure.put(`/tasks/${taskId}`, editedTask);
   };
 
   const handleDeleteTask = async (taskId) => {
     await axiosSecure.delete(`/tasks/${taskId}`);
-    fetchTasks();
   };
 
   if (loading) {
@@ -74,7 +132,7 @@ export default function TaskBoard() {
             <TaskColumn
               key={column.id}
               title={column.title}
-              tasks={tasks[column.id] || []}
+              tasks={tasks[column.id] || []} // Ensure tasks[column.id] is an array
               handleEditTask={handleEditTask}
               handleDeleteTask={handleDeleteTask}
             />
