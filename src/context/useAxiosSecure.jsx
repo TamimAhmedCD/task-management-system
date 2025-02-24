@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://task-management-system-backend-lopu.onrender.com",
 });
 
 const useAxiosSecure = () => {

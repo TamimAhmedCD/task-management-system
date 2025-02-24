@@ -9,7 +9,7 @@ import useAxiosSecure from "@/context/useAxiosSecure";
 import useAuth from "@/hooks/useAuth";
 
 // Define WebSocket connection (replace with your backend URL)
-const socket = io("http://localhost:3000"); // Change to your deployed backend URL
+const socket = io("https://task-management-system-backend-lopu.onrender.com"); // Change to your deployed backend URL
 
 const columns = [
   { title: "To-Do", id: "to-do" },
